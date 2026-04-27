@@ -98,12 +98,16 @@ function AppInit() {
 }
 
 import TrackingPage from './pages/TrackingPage';
+import LandingPage from './pages/LandingPage';
 
 export default function App() {
   return (
     <WebSocketProvider>
       <AppInit />
       <Routes>
+        {/* Public Landing Page */}
+        <Route path="/" element={<LandingPage />} />
+
         {/* Public Tracking Route (Standalone) */}
         <Route path="/track/:token" element={<TrackingPage />} />
 
@@ -116,7 +120,6 @@ export default function App() {
               <OfflineBanner />
               <main className="app-main">
                 <Routes>
-                  <Route path="/" element={<Navigate to="/dashboard" replace />} />
                   <Route path="/dashboard" element={<DispatchDashboard />} />
                   <Route path="/routes" element={<ActiveRoutes />} />
                   <Route path="/drivers" element={<FleetManagement />} />
@@ -125,6 +128,8 @@ export default function App() {
                   <Route path="/analytics" element={<FleetAnalytics />} />
                   <Route path="/history" element={<RouteHistory />} />
                   <Route path="/settings" element={<Settings />} />
+                  {/* Fallback to dashboard if inside the app layout */}
+                  <Route path="*" element={<Navigate to="/dashboard" replace />} />
                 </Routes>
               </main>
             </div>
