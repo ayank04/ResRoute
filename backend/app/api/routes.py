@@ -78,7 +78,7 @@ async def reroute_all(body: RerouteAllRequest = None):
     """Trigger reroute for all active vehicles"""
     try:
         # This is a heavy operation, giving it more time
-        return await asyncio.wait_for(self_heal_service.heal_all_active_routes(), timeout=15.0)
+        return await asyncio.wait_for(self_heal_service.heal_all_active_routes(), timeout=30.0)
     except Exception as e:
         logger.error(f"Heal all failed: {e}")
         return {"status": "error", "message": str(e)}

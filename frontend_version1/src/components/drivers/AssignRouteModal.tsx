@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { X, Route } from 'lucide-react';
 import { Driver } from '../../types';
 import { useUIStore } from '../../stores/uiStore';
+import { createRoute } from '../../services/api';
+import { Loader2 } from 'lucide-react';
 
 interface Props { driver: Driver; onClose: () => void; }
 
@@ -15,10 +17,25 @@ export default function AssignRouteModal({ driver, onClose }: Props) {
   const carbon = origin && destination ? (ecoMode ? 0.18 : 0.31) : null;
   const risk = origin && destination ? (ecoMode ? 28 : 44) : null;
 
-  function handleAssign() {
+  const [loading, setLoading] = useState(false);
+
+  async function handleAssign() {
     if (!origin || !destination) return;
-    showToast(`✅ Route assigned to ${driver.name}: ${origin} → ${destination} (${ecoMode ? 'Eco' : 'Fast'} mode)`, 'success');
-    onClose();
+    setLoading(true);
+    try {
+      await createRoute({
+        origin,
+        destination,
+        waypoints: [],
+        driver_id: driver.id
+      });
+      showToast(`✅ Route assigned to ${driver.name}`, 'success');
+      onClose();
+    } catch (err) {
+      showToast('Failed to assign route', 'error');
+    } finally {
+      setLoading(false);
+    }
   }
 
   const zones = ['Koramangala', 'HSR Layout', 'Indiranagar', 'Whitefield', 'Jayanagar', 'MG Road', 'Bannerghatta', 'Marathahalli', 'Electronic City', 'Yelahanka'];
@@ -91,8 +108,8 @@ export default function AssignRouteModal({ driver, onClose }: Props) {
 
           <div style={{ display: 'flex', gap: 8 }}>
             <button className="btn btn-ghost" style={{ flex: 1 }} onClick={onClose}>Cancel</button>
-            <button className="btn btn-primary" style={{ flex: 1 }} onClick={handleAssign} disabled={!origin || !destination}>
-              Assign Route
+            <button className="btn btn-primary" style={{ flex: 1 }} onClick={handleAssign} disabled={!origin || !destination || loading}>
+              {loading ? <Loader2 size={18} className="animate-spin" /> : 'Assign Route'}
             </button>
           </div>
         </div>

@@ -22,7 +22,12 @@ async def monitor_route(route_id: str) -> None:
 
     try:
         candidates, stale = await fetch_routes_with_fallback(
-            route.origin, route.destination, [], firestore_service
+            route.origin, 
+            route.destination, 
+            [], 
+            firestore_service,
+            origin_coords=route.originCoords,
+            destination_coords=route.destinationCoords
         )
     except Exception:
         return

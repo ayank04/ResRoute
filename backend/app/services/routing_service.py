@@ -163,23 +163,30 @@ def generate_mock_route(origin_coords: Coordinates, destination_coords: Coordina
         stale=True
     )]
 
-async def fetch_routes_with_fallback(origin: str, destination: str, waypoints: list[str], firestore_service, vehicle_type: str = "delivery") -> tuple[list[RouteCandidate], bool]:
+async def fetch_routes_with_fallback(
+    origin: str, 
+    destination: str, 
+    waypoints: list[str], 
+    firestore_service, 
+    vehicle_type: str = "delivery",
+    origin_coords: Coordinates = None,
+    destination_coords: Coordinates = None
+) -> tuple[list[RouteCandidate], bool]:
     profile_cfg = get_routing_profile(vehicle_type)
     
-    # Try geocoding
-    origin_coords = None
-    destination_coords = None
-    try:
-        origin_coords = await geocode(origin)
-        destination_coords = await geocode(destination)
-    except Exception:
-        # If geocoding fails, try to get from cache
-        cached = await firestore_service.get_cached_routes(origin, destination)
-        if cached: return (cached, True)
-        
-        # Absolute fallback: neutral coordinates (0,0) or last known
-        origin_coords = Coordinates(lat=12.9716, lon=77.5946) # Bangalore center
-        destination_coords = Coordinates(lat=12.9352, lon=77.6245) # Koramangala
+    # Try geocoding only if coords not provided
+    if not origin_coords or not destination_coords:
+        try:
+            if not origin_coords: origin_coords = await geocode(origin)
+            if not destination_coords: destination_coords = await geocode(destination)
+        except Exception:
+            # If geocoding fails, try to get from cache
+            cached = await firestore_service.get_cached_routes(origin, destination)
+            if cached: return (cached, True)
+            
+            # Absolute fallback: neutral coordinates (0,0) or last known
+            if not origin_coords: origin_coords = Coordinates(lat=12.9716, lon=77.5946) # Bangalore center
+            if not destination_coords: destination_coords = Coordinates(lat=12.9352, lon=77.6245) # Koramangala
     
     # 1. ORS Primary (if configured)
     if profile_cfg["engine"] == "ors":

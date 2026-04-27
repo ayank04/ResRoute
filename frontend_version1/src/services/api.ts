@@ -77,7 +77,7 @@ export const rerouteVehicle = (vehicleId: string, reason?: string) =>
   api.post('/routes/reroute', { vehicleId, reason }).then(r => r.data);
 
 export const rerouteAll = (reason?: string) =>
-  api.post('/routes/reroute/all', { reason }).then(r => r.data);
+  api.post('/routes/reroute/all', { reason }, { timeout: 30000 }).then(r => r.data);
 
 // --- DISRUPTIONS ---
 export const fetchDisruptions = () => 
