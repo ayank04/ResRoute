@@ -41,8 +41,9 @@ const USP_CARDS = [
 
 export default function LandingPage() {
   const navigate = useNavigate();
+  const [showScrollTop, setShowScrollTop] = React.useState(false);
 
-  // Intersection Observer for scroll reveals
+  // Intersection Observer for scroll reveals and scroll-to-top visibility
   React.useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
@@ -53,7 +54,16 @@ export default function LandingPage() {
     }, { threshold: 0.1 });
 
     document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-    return () => observer.disconnect();
+
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 400);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('scroll', handleScroll);
+    };
   }, []);
 
   return (
@@ -155,7 +165,7 @@ export default function LandingPage() {
         .section-tag {
           display: inline-flex;
           align-items: center;
-          gap: 8, 
+          gap: 8px;
           padding: 8px 16px;
           background: rgba(59, 130, 246, 0.1);
           border: 1px solid rgba(59, 130, 246, 0.2);
@@ -166,6 +176,59 @@ export default function LandingPage() {
           margin-bottom: 24px;
           text-transform: uppercase;
           letter-spacing: 0.1em;
+        }
+
+        .scroll-top-btn {
+          position: fixed;
+          bottom: 32px;
+          right: 32px;
+          width: 48px;
+          height: 48px;
+          background: #3b82f6;
+          color: white;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          border: none;
+          box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
+          z-index: 1000;
+          transition: all 0.3s;
+          opacity: 0;
+          pointer-events: none;
+          transform: translateY(20px);
+        }
+
+        .scroll-top-btn.visible {
+          opacity: 1;
+          pointer-events: auto;
+          transform: translateY(0);
+        }
+
+        .scroll-top-btn:hover {
+          background: #2563eb;
+          transform: scale(1.1);
+        }
+
+        .btn-launch {
+          background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+          border: 1px solid rgba(59, 130, 246, 0.3);
+          color: #fff;
+          padding: 10px 24px;
+          border-radius: 12px;
+          font-size: 14px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s;
+          box-shadow: 0 0 15px rgba(59, 130, 246, 0.1);
+        }
+
+        .btn-launch:hover {
+          background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%);
+          border-color: rgba(59, 130, 246, 0.6);
+          box-shadow: 0 0 25px rgba(59, 130, 246, 0.2);
+          transform: translateY(-1px);
         }
       `}</style>
 
@@ -181,11 +244,11 @@ export default function LandingPage() {
         alignItems: 'center', 
         justifyContent: 'space-between',
         padding: '0 40px',
-        background: 'rgba(2, 6, 23, 0.8)',
-        backdropFilter: 'blur(10px)',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.05)'
+        background: 'rgba(2, 6, 23, 0.85)',
+        backdropFilter: 'blur(12px)',
+        borderBottom: '1px solid rgba(255, 255, 255, 0.08)'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer' }} onClick={() => window.scrollTo(0,0)}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer' }} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
           <div style={{ 
             width: 40, height: 40, 
             background: 'linear-gradient(135deg, #3b82f6, #8b5cf6)', 
@@ -199,25 +262,25 @@ export default function LandingPage() {
         </div>
         
         <div style={{ display: 'flex', alignItems: 'center', gap: 32 }}>
+          <a onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="nav-link">Home</a>
           <a onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })} className="nav-link">Features</a>
           <a onClick={() => document.getElementById('vision')?.scrollIntoView({ behavior: 'smooth' })} className="nav-link">Vision</a>
           <button 
             onClick={() => navigate('/dashboard')}
-            className="btn" 
-            style={{ 
-              background: 'rgba(255, 255, 255, 0.05)', 
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              padding: '10px 20px',
-              borderRadius: 12,
-              fontSize: 14,
-              fontWeight: 600,
-              cursor: 'pointer'
-            }}
+            className="btn-launch"
           >
             Launch Command Center
           </button>
         </div>
       </nav>
+
+      {/* Back to Top Button */}
+      <button 
+        className={`scroll-top-btn ${showScrollTop ? 'visible' : ''}`}
+        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+      >
+        <Zap size={20} style={{ transform: 'rotate(-90deg)' }} />
+      </button>
 
       {/* Hero Section */}
       <section style={{ 
@@ -232,7 +295,7 @@ export default function LandingPage() {
         <div className="hero-gradient-2" />
         
         <div className="reveal section-tag">
-          <Zap size={14} style={{ marginRight: 6 }} /> Production-Ready Logistics Intelligence
+          <Zap size={14} /> Production-Ready Logistics Intelligence
         </div>
 
         <h1 className="reveal" style={{ 
@@ -439,7 +502,7 @@ export default function LandingPage() {
           The resilient route for the unpredictable world.
         </div>
         <div style={{ display: 'flex', justifyContent: 'center', gap: 24, marginBottom: 40 }}>
-          <a onClick={() => window.scrollTo(0,0)} className="nav-link">Back to Top</a>
+          <a onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="nav-link">Back to Top</a>
           <a href="#" className="nav-link">Documentation</a>
           <a href="#" className="nav-link">System Status</a>
         </div>
@@ -450,3 +513,4 @@ export default function LandingPage() {
     </div>
   );
 }
+
