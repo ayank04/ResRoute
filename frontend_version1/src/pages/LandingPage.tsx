@@ -42,18 +42,46 @@ const USP_CARDS = [
 export default function LandingPage() {
   const navigate = useNavigate();
 
+  // Intersection Observer for scroll reveals
+  React.useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('reveal-visible');
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <div className="landing-page" style={{ 
       minHeight: '100vh', 
       background: '#020617', 
       color: '#f8fafc',
       fontFamily: "'Outfit', sans-serif",
-      overflowX: 'hidden'
+      overflowX: 'hidden',
+      scrollBehavior: 'smooth'
     }}>
-      {/* Google Fonts Import */}
+      {/* Google Fonts & Global Animations */}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
         
+        html { scroll-behavior: smooth; }
+
+        .reveal {
+          opacity: 0;
+          transform: translateY(30px);
+          transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .reveal-visible {
+          opacity: 1;
+          transform: translateY(0);
+        }
+
         .glass-card {
           background: rgba(255, 255, 255, 0.03);
           backdrop-filter: blur(12px);
@@ -117,10 +145,27 @@ export default function LandingPage() {
           font-size: 14px;
           font-weight: 500;
           transition: color 0.2s;
+          cursor: pointer;
         }
 
         .nav-link:hover {
           color: #fff;
+        }
+
+        .section-tag {
+          display: inline-flex;
+          align-items: center;
+          gap: 8, 
+          padding: 8px 16px;
+          background: rgba(59, 130, 246, 0.1);
+          border: 1px solid rgba(59, 130, 246, 0.2);
+          border-radius: 100px;
+          color: #60a5fa;
+          font-size: 11px;
+          font-weight: 700;
+          margin-bottom: 24px;
+          text-transform: uppercase;
+          letter-spacing: 0.1em;
         }
       `}</style>
 
@@ -140,7 +185,7 @@ export default function LandingPage() {
         backdropFilter: 'blur(10px)',
         borderBottom: '1px solid rgba(255, 255, 255, 0.05)'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer' }} onClick={() => window.scrollTo(0,0)}>
           <div style={{ 
             width: 40, height: 40, 
             background: 'linear-gradient(135deg, #3b82f6, #8b5cf6)', 
@@ -154,8 +199,8 @@ export default function LandingPage() {
         </div>
         
         <div style={{ display: 'flex', alignItems: 'center', gap: 32 }}>
-          <a href="#features" className="nav-link">Features</a>
-          <a href="#vision" className="nav-link">Vision</a>
+          <a onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })} className="nav-link">Features</a>
+          <a onClick={() => document.getElementById('vision')?.scrollIntoView({ behavior: 'smooth' })} className="nav-link">Vision</a>
           <button 
             onClick={() => navigate('/dashboard')}
             className="btn" 
@@ -169,7 +214,7 @@ export default function LandingPage() {
               cursor: 'pointer'
             }}
           >
-            Go to Console
+            Launch Command Center
           </button>
         </div>
       </nav>
@@ -177,7 +222,7 @@ export default function LandingPage() {
       {/* Hero Section */}
       <section style={{ 
         position: 'relative',
-        padding: '180px 40px 100px',
+        padding: '200px 40px 100px',
         maxWidth: 1200,
         margin: '0 auto',
         textAlign: 'center',
@@ -186,25 +231,11 @@ export default function LandingPage() {
         <div className="hero-gradient" />
         <div className="hero-gradient-2" />
         
-        <div style={{ 
-          display: 'inline-flex', 
-          alignItems: 'center', 
-          gap: 8, 
-          padding: '8px 16px', 
-          background: 'rgba(59, 130, 246, 0.1)', 
-          border: '1px solid rgba(59, 130, 246, 0.2)',
-          borderRadius: 100,
-          color: '#60a5fa',
-          fontSize: 12,
-          fontWeight: 700,
-          marginBottom: 32,
-          textTransform: 'uppercase',
-          letterSpacing: '0.05em'
-        }}>
-          <Zap size={14} /> Production-Ready Logistics Intelligence
+        <div className="reveal section-tag">
+          <Zap size={14} style={{ marginRight: 6 }} /> Production-Ready Logistics Intelligence
         </div>
 
-        <h1 style={{ 
+        <h1 className="reveal" style={{ 
           fontSize: 'clamp(40px, 8vw, 72px)', 
           fontWeight: 800, 
           lineHeight: 1.1, 
@@ -212,24 +243,26 @@ export default function LandingPage() {
           marginBottom: 24,
           background: 'linear-gradient(to bottom, #fff 40%, #94a3b8)',
           WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent'
+          WebkitTextFillColor: 'transparent',
+          transitionDelay: '0.1s'
         }}>
           Resilient Routing for the <br />
           <span style={{ color: '#3b82f6', WebkitTextFillColor: 'initial' }} className="glow-text">Unpredictable</span> World.
         </h1>
 
-        <p style={{ 
+        <p className="reveal" style={{ 
           fontSize: 18, 
           color: '#94a3b8', 
           maxWidth: 600, 
           margin: '0 auto 40px',
-          lineHeight: 1.6
+          lineHeight: 1.6,
+          transitionDelay: '0.2s'
         }}>
           Last-mile delivery failure costs billions. ResRoute eliminates the chaos by 
           continuously re-evaluating risk every 60 seconds with AI-driven self-healing.
         </p>
 
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16 }}>
+        <div className="reveal" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16, transitionDelay: '0.3s' }}>
           <button 
             onClick={() => navigate('/dashboard')}
             className="btn" 
@@ -248,7 +281,7 @@ export default function LandingPage() {
               boxShadow: '0 10px 30px rgba(59, 130, 246, 0.3)'
             }}
           >
-            Launch Command Center <ArrowRight size={18} />
+            Start Dispatching <ArrowRight size={18} />
           </button>
         </div>
 
@@ -262,7 +295,7 @@ export default function LandingPage() {
       </section>
 
       {/* Stats Section */}
-      <section style={{ maxWidth: 1000, margin: '0 auto', padding: '0 40px 100px' }}>
+      <section className="reveal" style={{ maxWidth: 1000, margin: '0 auto', padding: '0 40px 100px', transitionDelay: '0.4s' }}>
         <div className="glass-card" style={{ 
           display: 'grid', 
           gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
@@ -272,29 +305,30 @@ export default function LandingPage() {
         }}>
           <div>
             <div style={{ fontSize: 32, fontWeight: 800, marginBottom: 4 }}>28%</div>
-            <div style={{ fontSize: 13, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Cost Reduction</div>
+            <div style={{ fontSize: 11, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Cost Reduction</div>
           </div>
           <div style={{ borderLeft: '1px solid rgba(255,255,255,0.05)', borderRight: '1px solid rgba(255,255,255,0.05)' }}>
             <div style={{ fontSize: 32, fontWeight: 800, marginBottom: 4 }}>60s</div>
-            <div style={{ fontSize: 13, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Sync Frequency</div>
+            <div style={{ fontSize: 11, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Sync Frequency</div>
           </div>
           <div>
             <div style={{ fontSize: 32, fontWeight: 800, marginBottom: 4 }}>47%</div>
-            <div style={{ fontSize: 13, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Risk Mitigation</div>
+            <div style={{ fontSize: 11, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Risk Mitigation</div>
           </div>
         </div>
       </section>
 
       {/* Features Section */}
       <section id="features" style={{ maxWidth: 1200, margin: '0 auto', padding: '100px 40px' }}>
-        <div style={{ textAlign: 'center', marginBottom: 60 }}>
-          <h2 style={{ fontSize: 36, fontWeight: 800, marginBottom: 16 }}>The Future of Logistics</h2>
-          <p style={{ color: '#94a3b8', fontSize: 16 }}>Powerful tools designed for real-time disruption management.</p>
+        <div className="reveal" style={{ textAlign: 'center', marginBottom: 60 }}>
+          <div className="section-tag">Powerful Features</div>
+          <h2 style={{ fontSize: 40, fontWeight: 800, marginBottom: 16 }}>The Future of Logistics</h2>
+          <p style={{ color: '#94a3b8', fontSize: 16 }}>Intelligent tools designed for real-time disruption management.</p>
         </div>
 
         <div className="usp-grid">
           {USP_CARDS.map((card, idx) => (
-            <div key={idx} className="glass-card" style={{ padding: 32, display: 'flex', flexDirection: 'column', gap: 20 }}>
+            <div key={idx} className="reveal glass-card" style={{ padding: 32, display: 'flex', flexDirection: 'column', gap: 20, transitionDelay: `${0.1 * idx}s` }}>
               <div style={{ 
                 width: 56, height: 56, 
                 background: `${card.color}15`, 
@@ -317,45 +351,80 @@ export default function LandingPage() {
       <section id="vision" style={{ 
         maxWidth: 1200, 
         margin: '0 auto', 
-        padding: '100px 40px',
+        padding: '150px 40px',
         display: 'grid',
-        gridTemplateColumns: '1fr 1fr',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))',
         gap: 80,
         alignItems: 'center'
       }}>
-        <div className="glass-card" style={{ height: 400, position: 'relative', overflow: 'hidden' }}>
+        <div className="reveal glass-card" style={{ height: 460, position: 'relative', overflow: 'hidden' }}>
           <div style={{ 
             position: 'absolute', 
             inset: 0, 
             background: 'url(https://images.unsplash.com/photo-1557683311-eac922347aa1?q=80&w=2800&auto=format&fit=crop)',
             backgroundSize: 'cover',
-            opacity: 0.2
+            opacity: 0.15
           }} />
           <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent, #020617)' }} />
           <div style={{ position: 'absolute', bottom: 40, left: 40, right: 40 }}>
-            <div style={{ color: '#3b82f6', fontWeight: 800, fontSize: 12, marginBottom: 8, textTransform: 'uppercase' }}>THE CORE ENGINE</div>
-            <h3 style={{ fontSize: 24, fontWeight: 700 }}>Spatial Intelligence at Scale</h3>
-            <p style={{ fontSize: 14, color: '#94a3b8', marginTop: 12 }}>Our backend architecture handles thousands of concurrent data points across traffic, weather, and incidents.</p>
+            <div style={{ color: '#3b82f6', fontWeight: 800, fontSize: 12, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.1em' }}>THE CORE ENGINE</div>
+            <h3 style={{ fontSize: 28, fontWeight: 700 }}>Spatial Intelligence at Scale</h3>
+            <p style={{ fontSize: 15, color: '#94a3b8', marginTop: 12, lineHeight: 1.6 }}>Our backend architecture handles thousands of concurrent data points across traffic, weather, and incidents to keep your fleet safe.</p>
           </div>
         </div>
 
-        <div>
-          <h2 style={{ fontSize: 36, fontWeight: 800, marginBottom: 24 }}>Beyond Pathfinding</h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
+        <div className="reveal" style={{ transitionDelay: '0.2s' }}>
+          <div className="section-tag">The Vision</div>
+          <h2 style={{ fontSize: 40, fontWeight: 800, marginBottom: 32 }}>Beyond Pathfinding</h2>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 40 }}>
             {[
-              { t: 'Unified Risk Dashboard', d: 'Eliminate reacting to driver reports manually. See every threat on a single, consolidated operational map.' },
-              { t: 'Gemini Disruption Parsing', d: 'Transform unstructured free-text news and alerts into actionable spatial data within milliseconds.' },
-              { t: 'Production-Grade Resilience', d: 'Built with circuit breakers and high-availability polling to ensure your fleet never goes blind.' }
+              { t: 'Unified Risk Dashboard', d: 'Stop reacting to driver calls. See every threat on a single operational map before the driver even knows it exists.' },
+              { t: 'Gemini Disruption Parsing', d: 'Turn unstructured free-text news into actionable spatial data. Our AI understands "accident on 4th" and maps it in ms.' },
+              { t: 'Production Resilience', d: 'Built with circuit breakers and fallback caching to ensure your dispatchers never lose visibility, even during API outages.' }
             ].map((item, i) => (
-              <div key={i} style={{ display: 'flex', gap: 20 }}>
-                <div style={{ color: '#3b82f6', marginTop: 4 }}><Zap size={20} /></div>
+              <div key={i} style={{ display: 'flex', gap: 24 }}>
+                <div style={{ 
+                  width: 48, height: 48, 
+                  background: 'rgba(59, 130, 246, 0.1)', 
+                  borderRadius: 12, 
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  color: '#3b82f6', flexShrink: 0
+                }}><Zap size={20} /></div>
                 <div>
-                  <h4 style={{ fontSize: 18, fontWeight: 700, marginBottom: 8 }}>{item.t}</h4>
-                  <p style={{ fontSize: 15, color: '#94a3b8', lineHeight: 1.5 }}>{item.d}</p>
+                  <h4 style={{ fontSize: 20, fontWeight: 700, marginBottom: 8 }}>{item.t}</h4>
+                  <p style={{ fontSize: 15, color: '#94a3b8', lineHeight: 1.6 }}>{item.d}</p>
                 </div>
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Final CTA Section */}
+      <section className="reveal" style={{ maxWidth: 1000, margin: '0 auto', padding: '100px 40px', textAlign: 'center' }}>
+        <div className="glass-card" style={{ padding: '80px 40px', background: 'linear-gradient(135deg, rgba(59,130,246,0.1), rgba(139,92,246,0.1))' }}>
+          <h2 style={{ fontSize: 40, fontWeight: 800, marginBottom: 24 }}>Ready to Secure Your Fleet?</h2>
+          <p style={{ color: '#94a3b8', maxWidth: 500, margin: '0 auto 40px' }}>Join the next generation of resilient logistics. One-click deployment for any city in the world.</p>
+          <button 
+            onClick={() => navigate('/dashboard')}
+            className="btn" 
+            style={{ 
+              background: '#fff', 
+              color: '#020617',
+              padding: '16px 40px',
+              borderRadius: 14,
+              fontSize: 16,
+              fontWeight: 800,
+              border: 'none',
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 8,
+              boxShadow: '0 20px 40px rgba(0,0,0,0.4)'
+            }}
+          >
+            Open Dispatch Console <ArrowRight size={18} />
+          </button>
         </div>
       </section>
 
@@ -370,8 +439,8 @@ export default function LandingPage() {
           The resilient route for the unpredictable world.
         </div>
         <div style={{ display: 'flex', justifyContent: 'center', gap: 24, marginBottom: 40 }}>
+          <a onClick={() => window.scrollTo(0,0)} className="nav-link">Back to Top</a>
           <a href="#" className="nav-link">Documentation</a>
-          <a href="#" className="nav-link">API Reference</a>
           <a href="#" className="nav-link">System Status</a>
         </div>
         <div style={{ color: '#334155', fontSize: 12 }}>
