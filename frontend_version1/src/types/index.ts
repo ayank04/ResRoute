@@ -5,6 +5,7 @@
 export interface Coordinates {
   lat: number;
   lng: number;
+  lon?: number;
 }
 
 export type DriverStatus = 'available' | 'on_trip' | 'offline' | 'break' | 'EN_ROUTE' | 'IDLE' | 'COMPLETED';

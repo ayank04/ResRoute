@@ -70,6 +70,9 @@ export const updateDriverStatus = (driverId: string, status: string) =>
 export const fetchActiveRoutes = () => 
   api.get('/routes/active').then(r => r.data);
 
+export const createRoute = (data: any) =>
+  api.post('/routes/', data).then(r => r.data);
+
 export const rerouteVehicle = (vehicleId: string, reason?: string) =>
   api.post('/routes/reroute', { vehicleId, reason }).then(r => r.data);
 

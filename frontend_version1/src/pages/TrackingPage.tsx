@@ -8,7 +8,9 @@ import { useUIStore } from '../stores/uiStore';
 import 'leaflet/dist/leaflet.css';
 
 // Fix Leaflet icon issue
+// @ts-ignore
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
+// @ts-ignore
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 
 let DefaultIcon = L.icon({
